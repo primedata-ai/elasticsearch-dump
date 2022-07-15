@@ -63,6 +63,7 @@ const defaults = {
   transform: null,
   headers: null,
   searchBody: null,
+  params: null,
   searchWithTemplate: null,
   cert: null,
   key: null,
@@ -101,7 +102,11 @@ const defaults = {
   s3ServerSideEncryption: null,
   s3SSEKMSKeyId: null,
   s3ACL: null,
-  quiet: false
+  quiet: false,
+  'ignore-errors': null,
+  retryAttempts: 9,
+  maxSockets: null,
+  fileSize: null
 }
 
 versionCheck()
@@ -164,7 +169,10 @@ const commonParams = [
   `--s3SSEKMSKeyId=${options.s3SSEKMSKeyId}`,
   `--s3ACL=${options.s3ACL}`,
   `--quiet=${options.quiet}`,
-  `--scroll-with-post=${options['scroll-with-post']}`
+  `--scroll-with-post=${options['scroll-with-post']}`,
+  `--ignore-errors=${options['ignore-errors']}`,
+  `--retryAttempts=${options.retryAttempts}`,
+  `--maxSockets=${options.maxSockets}`
 ]
 
 const fileExt = options.fsCompress ? 'json.gz' : 'json'
@@ -431,6 +439,7 @@ const dump = () => {
 
     const settingsChild = _fork([
       '--type=settings',
+      `--params=${options.params}`,
       `--input=${input}`,
       `--output=${outputSettings}`
     ])
@@ -444,6 +453,7 @@ const dump = () => {
 
     const mappingChild = _fork([
       '--type=mapping',
+      `--params=${options.params}`,
       `--input=${input}`,
       `--output=${outputMapping}`
     ])
@@ -457,6 +467,7 @@ const dump = () => {
 
     const analyzerChild = _fork([
       '--type=analyzer',
+      `--params=${options.params}`,
       `--input=${input}`,
       `--output=${outputAnalyzer}`
     ])
@@ -470,6 +481,7 @@ const dump = () => {
 
     const aliasChild = _fork([
       '--type=alias',
+      `--params=${options.params}`,
       `--input=${input}`,
       `--output=${outputAlias}`
     ])
@@ -502,7 +514,9 @@ const dump = () => {
       `--limit=${options.limit}`,
       `--offset=${options.offset}`,
       `--size=${options.size}`,
+      `--fileSize=${options.fileSize}`,
       `--searchBody=${options.searchBody}`,
+      `--params=${options.params}`,
       `--searchWithTemplate=${options.searchWithTemplate}`,
       `--prefix=${options.prefix}`,
       `--suffix=${options.suffix}`,
@@ -644,6 +658,7 @@ const load = () => {
       `--limit=${options.limit}`,
       `--offset=${options.offset}`,
       `--size=${options.size}`,
+      `--fileSize=${options.fileSize}`,
       `--prefix=${options.prefix}`,
       `--suffix=${options.suffix}`,
       `--support-big-int=${options['support-big-int']}`,
