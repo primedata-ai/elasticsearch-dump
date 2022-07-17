@@ -103,7 +103,7 @@ const defaults = {
   s3SSEKMSKeyId: null,
   s3ACL: null,
   quiet: false,
-  'ignore-errors': null,
+  'ignore-errors': false,
   retryAttempts: 9,
   maxSockets: null,
   fileSize: null
@@ -122,7 +122,7 @@ _.split(options.ignoreType, ',').forEach(field => {
 })
 
 if (options.includeType) {
-  const ignoreKeys = _.keys(options).filter((key) => key.startsWith('ignore'))
+  const ignoreKeys = _.keys(options).filter((key) => key.startsWith('ignore') && (!key.endsWith("-errors") && !key.endsWith("ChildError")))
   const includedKeys = _.split(options.includeType, ',')
   ignoreKeys.forEach(k => {
     options[k] = _.indexOf(includedKeys, _.toLower(/^ignore(.*)$/.exec(k)[1])) <= -1
